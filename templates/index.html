@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 80%;
+        }
+    </style>
+    <script>
+        async function predictPrice(event) {
+            event.preventDefault();  // Prevent the form from submitting the traditional way
+
+            // Gather input values
+            const squareFeet = document.getElementById('Square_Feet').value;
+            const bedrooms = document.getElementById('Bedrooms').value;
+            const age = document.getElementById('Age').value;
+            const locationRating = document.getElementById('Location_Rating').value;
+
+            // Prepare the data for the POST request
+            const inputData = {
+                Square_Feet: squareFeet,
+                Bedrooms: bedrooms,
+                Age: age,
+                Location_Rating: locationRating
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(inputData),
+                });
+
+                const result = await response.json();
+
+                // Check for errors
+                if (response.ok) {
+                    document.getElementById('result').innerText = 
+                        `Predicted Price: $${result.predicted_price}`;
+                } else {
+                    document.getElementById('result').innerText = 
+                        `Error: ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = 
+                    `Error: ${error.message}`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Predict House Price</h1>
+    <form id="prediction-form" onsubmit="predictPrice(event)">
+        <label for="Square_Feet">Square Feet:</label>
+        <input type="number" id="Square_Feet" name="Square_Feet" required><br><br>
+
+        <label for="Bedrooms">Bedrooms:</label>
+        <input type="number" id="Bedrooms" name="Bedrooms" required><br><br>
+
+        <label for="Age">Age of House:</label>
+        <input type="number" id="Age" name="Age" required><br><br>
+
+        <label for="Location_Rating">Location Rating:</label>
+        <input type="number" step="0.1" id="Location_Rating" name="Location_Rating" required><br><br>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <h2 id="result"></h2> <!-- Placeholder for result -->
+</body>
+</html>
