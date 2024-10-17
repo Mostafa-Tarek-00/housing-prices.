@@ -26,7 +26,6 @@ def home():
 
 # Route for making predictions
 @app.route('/predict', methods=['POST'])
-@app.route('/predict', methods=['POST'])
 def predict():
     try:
         # Get user input from the form
